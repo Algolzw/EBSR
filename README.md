@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # NTIRE2021 Burst Image Super-Resolution Challenge Track1 Synthetic Solution
 ## Dependencies
 - OS: Ubuntu 18.04
@@ -48,3 +49,8 @@ python3 test.py
 email:
 - algo_lzw@yahoo.com
 - yl_yjsy@163.com
+=======
+# EBSR: Feature Enhanced Burst Super-Resolution with Deformable Alignment
+
+### Coming Soon...
+>>>>>>> 9a71f134c896a9dfa9b9591b74f9a6c80a706b33
