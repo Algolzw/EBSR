@@ -45,12 +45,20 @@ python3 main.py --n_GPUs 2 --lr 0.0004 --root /data/ntire/ --model EBSR
 # Modify the path of test dataset and the path of the trained model
 python3 test.py
 ```
-## Contact
-email:
-- algo_lzw@yahoo.com
-- yl_yjsy@163.com
-=======
-# EBSR: Feature Enhanced Burst Super-Resolution with Deformable Alignment
+## Citations
+If EBSR helps your research or work, please consider citing EBSR.
+The following is a BibTeX reference. 
 
-### Coming Soon...
->>>>>>> 9a71f134c896a9dfa9b9591b74f9a6c80a706b33
+```
+@InProceedings{Luo_2021_CVPR,
+    author    = {Luo, Ziwei and Yu, Lei and Mo, Xuan and Li, Youwei and Jia, Lanpeng and Fan, Haoqiang and Sun, Jian and Liu, Shuaicheng},
+    title     = {EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) Workshops},
+    month     = {June},
+    year      = {2021},
+    pages     = {471-478}
+}
+```
+
+## Contact
+email: [algo_lzw@yahoo.com, yl_yjsy@163.com]
