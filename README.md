@@ -1,4 +1,4 @@
-# NTIRE2021 Burst Image Super-Resolution Challenge Track1 Synthetic Solution
+# EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment 
 ## Dependencies
 - OS: Ubuntu 18.04
 - Python: Python 3.7
