@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # NTIRE2021 Burst Image Super-Resolution Challenge Track1 Synthetic Solution
 ## Dependencies
 - OS: Ubuntu 18.04
