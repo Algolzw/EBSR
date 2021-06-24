@@ -16,6 +16,8 @@ parser.add_argument('--burst_channel', type=int, default=1,
                     help='burst size, max 14')
 parser.add_argument('--sift_lr', action='store_true',
                     help='use sift to pre-align burst frames')
+parser.add_argument('--lrcn', action='store_true',
+                    help='use long-range concatenating network')
 
 # Hardware specifications
 parser.add_argument('--n_threads', type=int, default=6,
