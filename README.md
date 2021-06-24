@@ -37,11 +37,11 @@ python3 test.py # run examples and check
 ```python3
 # Modify the root path of training dataset and model etc.
 # The number of GPUs should be more than 1
-python3 main.py --n_GPUs 2 --lr 0.0004 --root /data/ntire/ --model LRSC_EDVR
+python3 main.py --n_GPUs 2 --lr 0.0004 --root /data/ntire/ --model EBSR
 ```
 ## Test
 ```python3
-# Modify the path of test dataset and the path of the trained model 
+# Modify the path of test dataset and the path of the trained model
 python3 test.py
 ```
 ## Contact
