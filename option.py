@@ -48,7 +48,7 @@ parser.add_argument('--use_tree', action='store_true',
                     help='load head from other model')
 
 # Data specifications
-parser.add_argument('--root', type=str, default='/data/research/synthetic_dataset',
+parser.add_argument('--root', type=str, default='/data/dataset/ntire21/burstsr/synthetic',
                     help='dataset directory')
 parser.add_argument('--mode', type=str, default='train',
                     help='demo image directory')

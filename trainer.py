@@ -96,7 +96,8 @@ class Trainer():
         epoch = self.optimizer.get_last_epoch() + 1
         lr = self.optimizer.get_lr()
 
-        self.train_sampler.set_epoch(epoch)
+        if self.train_sampler:
+            self.train_sampler.set_epoch(epoch)
         if epoch % 200 == 0:
             self.ckp.write_log(
                 '[Epoch {}]\tLearning rate: {:.2e}'.format(epoch, Decimal(lr))
@@ -117,27 +118,20 @@ class Trainer():
             if self.args.local_rank == 0:
                 timer_data.hold()
                 timer_model.tic()
+
             if self.args.fp16:
                 with autocast():
                     sr = self.model(burst, 0)
-                    if self.args.use_tree:
-                        loss = self.aligned_loss(sr[0], gt)
-                        for sr_ in sr[1]:
-                            loss += self.aligned_loss(sr_, gt) / 5
-
-                    else:
-                        loss = self.aligned_loss(sr, gt)
+                    loss = self.aligned_loss(sr, gt)
             else:
                 sr = self.model(burst, 0)
-                if self.args.use_tree:
-                    loss = 0
-                    for sr_ in sr:
-                        loss += self.aligned_loss(sr_, gt) / 4
-                else:
-                    loss = self.aligned_loss(sr, gt)
+                loss = self.aligned_loss(sr, gt)
 
-            torch.distributed.barrier()
-            reduced_loss = utility.reduce_mean(loss, self.args.n_GPUs)
+            if self.args.n_GPUs > 1:
+                torch.distributed.barrier()
+                reduced_loss = utility.reduce_mean(loss, self.args.n_GPUs)
+            else:
+                reduced_loss = loss
 
             self.optimizer.zero_grad()
             if self.args.fp16:
@@ -202,8 +196,10 @@ class Trainer():
                 if self.args.use_tree:
                     sr = sr[0]
                 score = self.psnr_fn(sr, gt)
-                torch.distributed.barrier()
-                score = utility.reduce_mean(score, self.args.n_GPUs)
+
+                if self.args.n_GPUs > 1:
+                    torch.distributed.barrier()
+                    score = utility.reduce_mean(score, self.args.n_GPUs)
 
                 total_psnr += score
                 count += 1
@@ -249,7 +245,11 @@ class Trainer():
     def save_model(self, filename):
         print('save model...')
         net_save_path = os.path.join(self.save_model_dir, filename)
-        torch.save(self.model.model, net_save_path)
+        model = self.model.model
+        if self.args.n_GPUs > 1:
+            model = model.module
+
+        torch.save(model.state_dict(), net_save_path)
 
     def prepare(self, *args):
         device = torch.device('cpu' if self.args.cpu else 'cuda:{}'.format(self.args.local_rank))

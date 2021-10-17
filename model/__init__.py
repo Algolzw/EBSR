@@ -26,25 +26,7 @@ class Model(nn.Module):
 
         module = import_module('model.' + args.model.lower())
         self.model = module.make_model(args).to(self.device)
-        # print(self.model.device)
-        self.model = nn.parallel.DistributedDataParallel(self.model,
-            device_ids=[args.local_rank],
-            find_unused_parameters=True
-            )
-        if args.model == 'ENSEMBLE':
-            self.model.module.model1.load_state_dict(
-                torch.load(
-                    '../train_log/ddp/real_models/wdcn_lrsc/ddpbest_epoch.pth',
-                    {'cuda:0' : 'cuda:%d' % self.args.local_rank}).module.state_dict())
-            self.model.module.model2.load_state_dict(
-                torch.load(
-                    '../train_log/ddp/real_models/lrsc_nfsdcn_finetune/ddpbest_epoch.pth',
-                    {'cuda:0' : 'cuda:%d' % self.args.local_rank}).module.state_dict())
-            self.model.module.model3.load_state_dict(
-                torch.load(
-                    '../train_log/ddp/real_models/lrscw_nfdcn/ddpbest_epoch.pth',
-                    {'cuda:0' : 'cuda:%d' % self.args.local_rank}).module.state_dict())
-        # self.model = DDP(self.model)
+
         if args.precision == 'half':
             self.model.half()
 
@@ -54,6 +36,13 @@ class Model(nn.Module):
             resume=args.resume,
             cpu=args.cpu
         )
+
+        if args.n_GPUs > 1:
+            self.model = nn.parallel.DistributedDataParallel(self.model,
+                device_ids=[args.local_rank],
+                find_unused_parameters=True
+                )
+
         print(self.model, file=ckp.log_file)
 
     def forward(self, x, idx_scale):
@@ -62,8 +51,8 @@ class Model(nn.Module):
             self.model.set_scale(idx_scale)
 
         if self.training:
-            if self.n_GPUs > 1:
-                return self.model(x)
+            # if self.n_GPUs > 1:
+            return self.model(x)
         else:
             if self.chop:
                 forward_function = self.forward_chop
@@ -125,110 +114,7 @@ class Model(nn.Module):
             )
 
         if load_from:
-            # load_from = load_from.model
-            if self.args.load_head:
-                self.model.module.conv_first.load_state_dict(load_from.module.conv_first.state_dict())
-                self.model.module.feature_extraction.load_state_dict(load_from.module.feature_extraction.state_dict())
-                self.model.module.fea_L2_conv1.load_state_dict(load_from.module.fea_L2_conv1.state_dict())
-                # self.model.module.fea_L2_conv2.load_state_dict(load_from.module.fea_L2_conv2.state_dict())
-                self.model.module.fea_L3_conv1.load_state_dict(load_from.module.fea_L3_conv1.state_dict())
-                # self.model.module.fea_L3_conv2.load_state_dict(load_from.module.fea_L3_conv2.state_dict())
-                self.model.module.toplayer.load_state_dict(load_from.module.toplayer.state_dict())
-                self.model.module.smooth1.load_state_dict(load_from.module.smooth1.state_dict())
-                self.model.module.smooth2.load_state_dict(load_from.module.smooth2.state_dict())
-                self.model.module.latlayer1.load_state_dict(load_from.module.latlayer1.state_dict())
-                self.model.module.latlayer2.load_state_dict(load_from.module.latlayer2.state_dict())
-                self.model.module.pcd_align.load_state_dict(load_from.module.pcd_align.state_dict())
-                self.model.module.fusion.load_state_dict(load_from.module.fusion.state_dict())
-
-            if self.args.load_sr:
-                self.model.module.recon_trunk.load_state_dict(load_from.module.recon_trunk.state_dict())
-                self.model.module.skipup1.load_state_dict(load_from.module.skipup1.state_dict())
-                self.model.module.skipup2.load_state_dict(load_from.module.skipup2.state_dict())
-                # self.model.module.recon_trunk_large.load_state_dict(load_from.module.recon_trunk_large.state_dict())
-                self.model.module.upconv1.load_state_dict(load_from.module.upconv1.state_dict())
-                self.model.module.upconv2.load_state_dict(load_from.module.upconv2.state_dict())
-                self.model.module.HRconv.load_state_dict(load_from.module.HRconv.state_dict())
-                self.model.module.conv_last.load_state_dict(load_from.module.conv_last.state_dict())
-
-
-            if not self.args.load_head and not self.args.load_sr:
-                self.model.load_state_dict(load_from.state_dict())
-
-
-            if self.args.finetune_head:
-                for param in self.model.module.parameters():
-                    param.requires_grad = False
-                for param in self.model.module.pcd_align.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.fusion.parameters():
-                    param.requires_grad = True
-
-            if self.args.finetune_large:
-                for param in self.model.module.parameters():
-                    param.requires_grad = False
-                for param in self.model.module.fusion.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.recon_trunk[-1].parameters():
-                    param.requires_grad = True
-                for param in self.model.module.recon_trunk_large.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.skipup1.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.skipup2.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.upconv1.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.upconv2.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.HRconv.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.conv_last.parameters():
-                    param.requires_grad = True
-                if self.args.use_tree:
-                    for param in self.model.module.trees1.parameters():
-                        param.requires_grad = True
-                    for param in self.model.module.trees2.parameters():
-                        param.requires_grad = True
-
-            if self.args.finetune_large_skip:
-                for param in self.model.module.parameters():
-                    param.requires_grad = False
-                # for param in self.model.module.recon_trunk[-2].parameters():
-                    # param.requires_grad = True
-                for param in self.model.module.recon_trunk[-1].parameters():
-                    param.requires_grad = True
-                # for param in self.model.module.recon_trunk_large[-2].parameters():
-                    # param.requires_grad = True
-                for param in self.model.module.recon_trunk_large[-1].parameters():
-                    param.requires_grad = True
-                for param in self.model.module.recon_trunk_large_skip.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.upconv1.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.upconv2.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.HRconv.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.conv_last.parameters():
-                    param.requires_grad = True
-
-            if self.args.finetune_pcd:
-                for param in self.model.module.parameters():
-                    param.requires_grad = False
-                for param in self.model.module.pcd_align.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.tsa_fusion.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.upconv1.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.upconv2.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.HRconv.parameters():
-                    param.requires_grad = True
-                for param in self.model.module.conv_last.parameters():
-                    param.requires_grad = True
-
+            self.model.load_state_dict(load_from)
             del load_from
 
     def forward_chop(self, *args, shave=10, min_size=160000):

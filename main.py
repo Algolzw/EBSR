@@ -41,27 +41,21 @@ def init_seeds(seed=0, cuda_deterministic=True):
 checkpoint = utility.checkpoint(args)
 
 
-def train_transform(train=False):
-    transforms = []
-    if train:
-        transforms.append(T.RandomHorizontalFlip())
-    transforms.append(T.ToTensor())
-    return T.Compose(transforms)
-
-
 def main():
-    mp.spawn(main_worker, nprocs=args.n_GPUs, args=(args.n_GPUs, args))
+    if args.n_GPUs > 1:
+        mp.spawn(main_worker, nprocs=args.n_GPUs, args=(args.n_GPUs, args))
+    else:
+        main_worker(0, args.n_GPUs, args)
 
 
 def main_worker(local_rank, nprocs, args):
     if checkpoint.ok:
         args.local_rank = local_rank
-        init_seeds(local_rank+1)
-        cudnn.benchmark = True
-        utility.setup(local_rank, nprocs)
-        torch.cuda.set_device(local_rank)
-
-        train_trans = train_transform(train=True)
+        if nprocs > 1:
+            init_seeds(local_rank+1)
+            cudnn.benchmark = True
+            utility.setup(local_rank, nprocs)
+        torch.cuda.set_device(args.local_rank)
 
         batch_size = int(args.batch_size / nprocs)
         train_zurich_raw2rgb = ZurichRAW2RGB(root=args.root, split='train')
@@ -70,12 +64,20 @@ def main_worker(local_rank, nprocs, args):
         valid_zurich_raw2rgb = ZurichRAW2RGB(root=args.root, split='test')
         valid_data = SyntheticBurst(valid_zurich_raw2rgb, burst_size=args.burst_size, crop_sz=384)
 
-        train_sampler = torch.utils.data.distributed.DistributedSampler(train_data)
-        valid_sampler = torch.utils.data.distributed.DistributedSampler(valid_data, shuffle=False)
-        train_loader = DataLoader(dataset=train_data, batch_size=batch_size, num_workers=args.n_GPUs*2,
-                                  pin_memory=True, drop_last=True, sampler=train_sampler)
-        valid_loader = DataLoader(dataset=valid_data, batch_size=batch_size//2, num_workers=args.n_GPUs,
-                                  pin_memory=True, drop_last=True, sampler=valid_sampler)
+        if nprocs > 1:
+            train_sampler = torch.utils.data.distributed.DistributedSampler(train_data)
+            valid_sampler = torch.utils.data.distributed.DistributedSampler(valid_data, shuffle=False)
+            train_loader = DataLoader(dataset=train_data, batch_size=batch_size, num_workers=8,
+                                      pin_memory=True, drop_last=True, sampler=train_sampler)
+            valid_loader = DataLoader(dataset=valid_data, batch_size=batch_size, num_workers=4,
+                                      pin_memory=True, drop_last=True, sampler=valid_sampler)
+        else:
+            train_sampler = None
+            train_loader = DataLoader(dataset=train_data, batch_size=args.batch_size, num_workers=8,
+                                    shuffle=True, pin_memory=True, drop_last=True)  # args.cpus
+            valid_loader = DataLoader(dataset=valid_data, batch_size=args.batch_size, num_workers=4, shuffle=False,
+                                    pin_memory=True, drop_last=True)  # args.cpus
+
 
         _model = model.Model(args, checkpoint)
         _loss = loss.Loss(args, checkpoint) if not args.test_only else None
