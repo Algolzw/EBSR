@@ -30,7 +30,7 @@ parser.add_argument('--seed', type=int, default=1,
                     help='random seed')
 parser.add_argument('--local_rank', type=int, default=-1,
                     help='proc index')
-parser.add_argument('--fp16', default=True,
+parser.add_argument('--fp16', action='store_true',
                     help='use fp16 only')
 parser.add_argument('--load_head', action='store_true',
                     help='load head from other model')
