@@ -1,10 +1,9 @@
 # EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment
+
+### Update !!!
+Now we support 1 GPU training and provide the pretrained model [here](https://drive.google.com/file/d/1_WA2chhITIsCj6qImcEM2lD6c-iJsRpy/view?usp=sharing).
+
 ## Dependencies
-
-### Update
-Now we support 1 GPU training and provide the pretrained model [here](https://drive.google.com/file/d/1_WA2chhITIsCj6qImcEM2lD6c-iJsRpy/view?usp=sharing)
-.
-
 - OS: Ubuntu 18.04
 - Python: Python 3.7
 - nvidia :
