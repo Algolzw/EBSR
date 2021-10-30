@@ -1,4 +1,4 @@
-# EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment 
+# EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment
 ## Dependencies
 - OS: Ubuntu 18.04
 - Python: Python 3.7
@@ -37,7 +37,7 @@ python3 test.py # run examples and check
 ```python3
 # Modify the root path of training dataset and model etc.
 # The number of GPUs should be more than 1
-python3 main.py --n_GPUs 2 --lr 0.0004 --root /data/ntire/ --model EBSR
+python main.py --n_GPUs 4 --lr 0.0002 --decay 200-400 --save ebsr --model EBSR --fp16 --lrcn --non_local --n_feats 128 --n_resblocks 8 --n_resgroups 5 --batch_size 16 --burst_size 14 --patch_size 256 --scale 4 --loss 1*L1
 ```
 ## Test
 ```python3
@@ -46,7 +46,7 @@ python3 test.py
 ```
 ## Citations
 If EBSR helps your research or work, please consider citing EBSR.
-The following is a BibTeX reference. 
+The following is a BibTeX reference.
 
 ```
 @InProceedings{Luo_2021_CVPR,

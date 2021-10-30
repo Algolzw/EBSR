@@ -59,13 +59,10 @@ def main_worker(local_rank, nprocs, args):
 
 
     dataset = SyntheticBurstVal('/data/dataset/ntire21/burstsr/synthetic/syn_burst_val')
-    # dataset = SyntheticBurstVal('/data/dataset/ntire21/burstsr/synthetic_test_set')
-    # out_dir = 'lrcg_nlfpcd'
     out_dir = 'val'
 
     # TODO Set your network here
-    _model = torch.load('../models/synthetic/ensemble.pth')
-    # _model = torch.load('../models/synthetic/long_range_concate_group_non_local_FEPCD.pth')
+    _model = torch.load('../train_log/EBSR/real_models/ebsr/EBSRbest_epoch.pth')
 
     device = 'cuda'
     os.makedirs(out_dir, exist_ok=True)
