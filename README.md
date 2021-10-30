@@ -42,7 +42,11 @@ python main.py --n_GPUs 4 --lr 0.0002 --decay 200-400 --save ebsr --model EBSR -
 ## Test
 ```python3
 # Modify the path of test dataset and the path of the trained model
-python3 test.py
+python test.py --root /data/dataset/ntire21/burstsr/synthetic/syn_burst_val --model EBSR --lrcn --non_local --n_feats 128 --n_resblocks 8 --n_resgroups 5 --burst_size 14 --scale 4 --pre_train ./checkpoints/EBSRbest_epoch.pth
+```
+or test on the validation dataset:
+```python3
+python main.py --n_GPUs 1 --test_only --model EBSR --lrcn --non_local --n_feats 128 --n_resblocks 8 --n_resgroups 5 --burst_size 14 --scale 4 --pre_train ./checkpoints/EBSRbest_epoch.pth
 ```
 ## Citations
 If EBSR helps your research or work, please consider citing EBSR.

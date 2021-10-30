@@ -11,6 +11,7 @@ from utils.data_format_utils import convert_dict
 from utils.metrics import PSNR, L1, L2, CharbonnierLoss, MSSSIMLoss
 from datasets.burstsr_dataset import pack_raw_image, flatten_raw_image_batch
 from data_processing.camera_pipeline import demosaic
+from tqdm import tqdm
 
 from torch.cuda.amp import autocast as autocast, GradScaler
 
@@ -179,8 +180,8 @@ class Trainer():
             self.model.eval()
             total_psnr = 0
             count = 0
-
-            for i, batch_value in enumerate(self.loader_valid):
+            print("Testing...")
+            for i, batch_value in tqdm(enumerate(self.loader_valid)):
                 burst_, gt, flow_vectors, meta_info = batch_value
                 burst_, gt, flow_vectors = self.prepare(burst_, gt, flow_vectors)
 
@@ -236,7 +237,7 @@ class Trainer():
 
                 print('Forward: {:.2f}s\n'.format(timer_test.toc()))
 
-                if (epoch) % 5 == 0:
+                if (epoch) % 5 == 0 and not self.args.test_only:
                     filename = exp_name + '_epoch_' + str(epoch) + '.pth'
                     self.save_model(filename)
 
