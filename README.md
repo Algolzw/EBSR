@@ -1,4 +1,4 @@
-# EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment
+# EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment (CVPRW 2021)
 
 --
 
