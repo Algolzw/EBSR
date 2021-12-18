@@ -1,7 +1,18 @@
 # EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment
 
+--
+
+
 ### Update !!!
-Now we support 1 GPU training and provide the pretrained model [here](https://drive.google.com/file/d/1_WA2chhITIsCj6qImcEM2lD6c-iJsRpy/view?usp=sharing).
+- Now we support 1 GPU training and provide the pretrained model [here](https://drive.google.com/file/d/1_WA2chhITIsCj6qImcEM2lD6c-iJsRpy/view?usp=sharing).
+
+
+<!--![ts](figs/ts.png)-->
+<div  align="center"> 
+<img src="figs/ts.png" width="80%" height="50%">
+</div>
+
+This repository is an official PyTorch implementation of the paper **"EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment"** from CVPRW 2021, 1st NTIRE21 Burst SR in real track (2nd in synthetic track).
 
 ## Dependencies
 - OS: Ubuntu 18.04
