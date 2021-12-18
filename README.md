@@ -1,4 +1,4 @@
-# EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment
+# EBSR: Feature Enhanced Burst Super-Resolution With Deformable Alignment (CVPRW 2021)
 
 ### Update !!!
 Now we support 1 GPU training and provide the pretrained model [here](https://drive.google.com/file/d/1_WA2chhITIsCj6qImcEM2lD6c-iJsRpy/view?usp=sharing).
