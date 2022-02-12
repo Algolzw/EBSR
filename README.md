@@ -62,6 +62,14 @@ or test on the validation dataset:
 ```python3
 python main.py --n_GPUs 1 --test_only --model EBSR --lrcn --non_local --n_feats 128 --n_resblocks 8 --n_resgroups 5 --burst_size 14 --scale 4 --pre_train ./checkpoints/EBSRbest_epoch.pth
 ```
+### Real track evaluation
+You may need to download pretrained PWC model to the pwcnet directory ([here](https://drive.google.com/file/d/1dD6vB9QN3qwmOBi3AGKzJbbSojwDDlgV/view?usp=sharing)).
+
+```
+python test_real.py --n_GPUs 1 --model EBSR --lrcn --non_local --n_feats 128 --n_resblocks 8 --n_resgroups 5 --burst_size 14 --scale 4 --pre_train ./checkpoints/BBSR_realbest_epoch.pth --root burstsr_validation_dataset...
+
+```
+
 ## Citations
 If EBSR helps your research or work, please consider citing EBSR.
 The following is a BibTeX reference.
