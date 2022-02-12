@@ -9,14 +9,8 @@ import time
 
 class SamsungRAWImage:
     @staticmethod
-    def load(path, sift=False):
+    def load(path):
         im_raw = cv2.imread('{}/im_raw.png'.format(path), cv2.IMREAD_UNCHANGED)
-
-        if sift:
-            homo_idx = int(path.split('_')[-1])
-            homo_path = os.path.join(path[:-3].replace('burstsr_dataset', 'burstsr_dataset_aligned'), '{}.npy'.format(homo_idx))
-            H = np.load(homo_path)
-            im_raw = cv2.warpPerspective(im_raw, H, (im_raw.shape[1], im_raw.shape[0]), flags=cv2.INTER_CUBIC)
 
         im_raw = np.transpose(im_raw, (2, 0, 1)).astype(np.int16)
         im_raw = torch.from_numpy(im_raw)
@@ -120,11 +114,6 @@ class CanonImage:
     @staticmethod
     def load(path, split='train'):
         im_raw = cv2.imread('{}/im_raw.png'.format(path), cv2.IMREAD_UNCHANGED)
-        if split == 'train':
-            homo_path = path.replace('burstsr_dataset', 'burstsr_dataset_aligned')
-            H = np.load('{}/homo_mat.npy'.format(homo_path))
-            im_raw = cv2.warpPerspective(im_raw, H, (im_raw.shape[1], im_raw.shape[0]), flags=cv2.INTER_CUBIC)
-
         im_raw = np.transpose(im_raw, (2, 0, 1)).astype(np.int16)
         im_raw = torch.from_numpy(im_raw)
         meta_data = pkl.load(open('{}/meta_info.pkl'.format(path), "rb", -1))
@@ -233,7 +222,7 @@ def load_txt(path):
 
 class BurstSRDataset(torch.utils.data.Dataset):
     """ Real-world burst super-resolution dataset. """
-    def __init__(self, root, burst_size=8, crop_sz=80, center_crop=False, random_flip=False, sift_lr=False, split='train'):
+    def __init__(self, root, burst_size=8, crop_sz=80, center_crop=False, random_flip=False, split='train'):
         """
         args:
             root : path of the root directory
@@ -256,8 +245,6 @@ class BurstSRDataset(torch.utils.data.Dataset):
         self.center_crop = center_crop
         self.random_flip = random_flip
 
-        self.sift_lr = sift_lr
-
         self.root = root
 
         self.substract_black_level = True
@@ -275,7 +262,7 @@ class BurstSRDataset(torch.utils.data.Dataset):
         return burst_info
 
     def _get_raw_image(self, burst_id, im_id):
-        raw_image = SamsungRAWImage.load('{}/{}/samsung_{:02d}'.format(self.root, self.burst_list[burst_id], im_id), sift=self.sift_lr)
+        raw_image = SamsungRAWImage.load('{}/{}/samsung_{:02d}'.format(self.root, self.burst_list[burst_id], im_id))
         return raw_image
 
     def _get_gt_image(self, burst_id):

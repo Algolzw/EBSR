@@ -9,7 +9,7 @@ class SyntheticBurstVal(torch.utils.data.Dataset):
     """
     def __init__(self, root):
         self.root = root
-        self.burst_list = list(range(300))
+        self.burst_list = list(range(100))
         self.burst_size = 14
 
     def __len__(self):

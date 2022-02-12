@@ -2,7 +2,8 @@
 
 
 ### Update !!!
-- Now we support 1 GPU training and provide the pretrained model [here](https://drive.google.com/file/d/1_WA2chhITIsCj6qImcEM2lD6c-iJsRpy/view?usp=sharing).
+- **2022.01.22** We updated the code to support real track testing and provided the model weights [here](https://drive.google.com/file/d/1Zz21YwNtiKZCjerrZsdvcWyubqTJBwaD/view?usp=sharing)
+- **2021** Now we support 1 GPU training and provide the pretrained model [here](https://drive.google.com/file/d/1_WA2chhITIsCj6qImcEM2lD6c-iJsRpy/view?usp=sharing).
 
 
 <!--![ts](figs/ts.png)-->
