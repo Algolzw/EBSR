@@ -35,7 +35,7 @@ conda install pytorch==1.6.0 torchvision==0.7.0 cudatoolkit=10.1 -c pytorch
 ```python3
 pip3 install -r requirements.txt
 ```
-4.Install apex to use DistributedDataParallel following the [Nvidia apex](https://github.com/NVIDIA/apex)
+4.Install apex to use DistributedDataParallel following the [Nvidia apex](https://github.com/NVIDIA/apex) (optional)
 ```python3
 git clone https://github.com/NVIDIA/apex
 cd apex
